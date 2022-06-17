@@ -1,5 +1,26 @@
-var socket = io();
 var colors = [];
+var urli = "";
+
+if (window.location.href.split('?')[1]) {
+  let stri = window.location.href.split('?')[0];
+  urli = stri;
+  if (stri.includes("start")) {
+    if (window.location.href.split('?')[1].split("=")[1] == 0) {
+      console.log("nothing just simple page");
+    }
+    else {
+      let roomcode = window.location.href.split('?')[1].split("=")[1]
+      document.getElementById("room").value = roomcode;
+    }
+  }
+  else if (stri.includes("random")) {
+    window.location.href = stri;
+  }
+}
+else {
+  urli = window.location.href.split('?')[0];
+}
+
 const onClick = (event) => {
   var curr = event.srcElement.id;
   if (curr.length > 0) {
@@ -35,8 +56,11 @@ function CreateRoom() {
     window.alert("Input name is invalid!!");
     return;
   }
-  socket.emit("createroom", colors, name);
-  // window.location.href = './gamepage.html'
+  localStorage.setItem("color", colors);
+  localStorage.setItem("name", name);
+  let ret = urli.replace("start", "join")
+  console.log(ret);
+  window.location.href = ret + "?room=";
 }
 
 function Enter() {
@@ -51,14 +75,8 @@ function Enter() {
     return;
   }
   var roomcode = document.getElementById("room").value;
-  socket.emit("joinroom", colors, name, roomcode);
+  localStorage.setItem("color", colors);
+  localStorage.setItem("name", name);
+  let ret = urli.replace("start", "join")
+  window.location.href = ret + "?room=" + roomcode;
 }
-
-socket.on("invalid", (code) => {
-  window.alert("Entered roomcode is invalid!!");
-  return;
-})
-socket.on("roomfull", (code) => {
-  window.alert("Entered roomcode is Already Full!!");
-  return;
-})
